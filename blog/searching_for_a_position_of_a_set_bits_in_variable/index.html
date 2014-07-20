@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> Searching for a position of set bits in a variable &middot; Marko Kevac home </title>
+
+  
+  <link rel="stylesheet" href="http://mkevac.github.io/kevac.org/css/poole.css">
+  <link rel="stylesheet" href="http://mkevac.github.io/kevac.org/css/syntax.css">
+  <link rel="stylesheet" href="http://mkevac.github.io/kevac.org/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Marko Kevac home" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>Marko Kevac home</h1>
+      <p class="lead">
+      An elegant open source and mobile first theme for <a href="http://hugo.spf13.com">hugo</a> made by <a href="http://twitter.com/mdo">@mdo</a>. Originally made for Jekyll.
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/">Home</a> </li>
+      
+    </ul>
+
+    <p>&copy; 2014. All rights reserved. </p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>Searching for a position of set bits in a variable</h1>
+  <span class="post-date">Sat, Jun 30, 2012</span>
+      <p>In a deamon that I have created in Badoo I need to search for a positions of a bits in a 32 bit variable.
+The simplest solution is to look at each bit, but there is a faster solution using
+GCC <a href="http://gcc.gnu.org/onlinedocs/gcc-4.4.2/gcc/Other-Builtins.html">built in function</a> __builtin_ctzl:</p>
+
+<blockquote>
+<p>Returns the number of trailing 0-bits in x, starting at the least significant bit position.
+If x is 0, the result is undefined.</p>
+</blockquote>
+
+<p>So I wrote test to compare speed of these two approaches:</p>
+
+<script src="https://gist.github.com/mkevac/3018264.js"></script>
+
+<p>Here is the result of testing on my VirtualBox:</p>
+
+<pre><code>marko@marko-virtual ~/badoo/temp $ gcc builtin_test.c -o test -O3 --std=gnu99
+marko@marko-virtual ~/badoo/temp $ ./test
+generating flags... 5 s
+using cycle... 8 s
+11929711 11926960 11926934 11925219 11928833 11923393 11923177
+11924621 11924564 11928647 11921652 11924644 11926105 11929288
+11929690 11924292 11923555 11922419 11925611 11924387 11928793
+11926351 11928699 11927228 11922918 11921752 11927864 11926735
+11927322 11923573 11932816 11930695
+using builtin... 1 s
+11929711 11926960 11926934 11925219 11928833 11923393 11923177
+11924621 11924564 11928647 11921652 11924644 11926105 11929288
+11929690 11924292 11923555 11922419 11925611 11924387 11928793
+11926351 11928699 11927228 11922918 11921752 11927864 11926735
+11927322 11923573 11932816 11930695
+SAME
+marko@marko-virtual ~/badoo/temp $ gcc builtin_test.c -o test -O0 -g3
+--std=gnu99
+marko@marko-virtual ~/badoo/temp $ gcc builtin_test.c -o test -O0 --std=gnu99
+marko@marko-virtual ~/badoo/temp $ ./test
+generating flags... 5 s
+using cycle... 14 s
+11929711 11926960 11926934 11925219 11928833 11923393 11923177
+11924621 11924564 11928647 11921652 11924644 11926105 11929288
+11929690 11924292 11923555 11922419 11925611 11924387 11928793
+11926351 11928699 11927228 11922918 11921752 11927864 11926735
+11927322 11923573 11932816 11930695
+using builtin... 3 s
+11929711 11926960 11926934 11925219 11928833 11923393 11923177
+11924621 11924564 11928647 11921652 11924644 11926105 11929288
+11929690 11924292 11923555 11922419 11925611 11924387 11928793
+11926351 11928699 11927228 11922918 11921752 11927864 11926735
+11927322 11923573 11932816 11930695
+SAME
+</code></pre>
+
+<p>While writing test, I have stumbled upon issue with bit shifting. It happened that if you right shift
+by the size of a variable, you get not 0, but same number. So I have additional if statement
+for case when I have to shift by 32.</p>
+
+</div>
+</div>
+
+  </body>
+</html>

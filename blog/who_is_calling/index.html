@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> Who is calling? &middot; Marko Kevac home </title>
+
+  
+  <link rel="stylesheet" href="http://mkevac.github.io/kevac.org/css/poole.css">
+  <link rel="stylesheet" href="http://mkevac.github.io/kevac.org/css/syntax.css">
+  <link rel="stylesheet" href="http://mkevac.github.io/kevac.org/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Marko Kevac home" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>Marko Kevac home</h1>
+      <p class="lead">
+      An elegant open source and mobile first theme for <a href="http://hugo.spf13.com">hugo</a> made by <a href="http://twitter.com/mdo">@mdo</a>. Originally made for Jekyll.
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/">Home</a> </li>
+      
+    </ul>
+
+    <p>&copy; 2014. All rights reserved. </p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>Who is calling?</h1>
+  <span class="post-date">Fri, May 2, 2014</span>
+      <p>Sometimes your program uses a lot of system time. Let&rsquo;s say 90%. You fire up your favorite profiling tool
+and it tells you which system call it is. If you are experiences and maybe lucky, you can say straight
+away which part of your program is to blame. But it&rsquo;s not always so obvious.</p>
+
+<p>GDB comes to the rescue. You can use &lsquo;catch syscall <syscall>&rsquo; and it will break when particular
+syscall is called. And then you can use &lsquo;bt&rsquo; to find where in your code this syscall is being called from.</p>
+
+<pre><code>(gdb)&gt; catch syscall futex
+
+(gdb)&gt; c
+Continuing.
+[Switching to Thread 0x7ffff3ffc700 (LWP 14893)]
+
+Catchpoint 1 (call to syscall futex), 0x00007ffff76ce779 in __lll_unlock_wake_private () from /lib64/libc.so.6
+
+(gdb)&gt; bt
+#0  0x00007ffff76ce779 in __lll_unlock_wake_private () from /lib64/libc.so.6
+#1  0x00007ffff76060fc in _L_unlock_147 () from /lib64/libc.so.6
+#2  0x00007ffff7606006 in random () from /lib64/libc.so.6
+#3  0x000000000040154c in thread_worker (ctx=0x0) at memorytest.c:90
+#4  0x00007ffff7992f33 in start_thread () from /lib64/libpthread.so.0
+#5  0x00007ffff76c0ded in clone () from /lib64/libc.so.6
+</code></pre>
+
+<p>P.S. Don&rsquo;t use random() in multi-threaded program. Use random_r().</p>
+
+</div>
+</div>
+
+  </body>
+</html>
